@@ -11,17 +11,51 @@ function App() {
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [chatStarted, setChatStarted] = useState(false)
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const isAtBottomRef = useRef(true)
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  // Track whether user is scrolled to bottom
+  const handleScroll = useCallback(() => {
+    const el = messagesContainerRef.current
+    if (!el) return
+    const threshold = 40
+    isAtBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold
+  }, [])
+
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior })
   }, [])
 
   useEffect(() => {
-    scrollToBottom()
+    if (isAtBottomRef.current) {
+      scrollToBottom()
+    }
   }, [messages, scrollToBottom])
+
+  // Track mobile keyboard via visualViewport API
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+
+    const onResize = () => {
+      const kbHeight = window.innerHeight - vv.height - vv.offsetTop
+      setKeyboardHeight(Math.max(0, kbHeight))
+      // When keyboard opens/closes and we were at bottom, stay at bottom
+      if (isAtBottomRef.current) {
+        requestAnimationFrame(() => scrollToBottom('instant'))
+      }
+    }
+
+    vv.addEventListener('resize', onResize)
+    vv.addEventListener('scroll', onResize)
+    return () => {
+      vv.removeEventListener('resize', onResize)
+      vv.removeEventListener('scroll', onResize)
+    }
+  }, [scrollToBottom])
 
   const resetTextarea = () => {
     if (textareaRef.current) {
@@ -40,6 +74,9 @@ function App() {
   const handleSend = async () => {
     const trimmed = input.trim()
     if (!trimmed || isStreaming) return
+
+    // Blur to dismiss mobile keyboard
+    textareaRef.current?.blur()
 
     const userMessage: Message = { role: 'user', content: trimmed }
     const newMessages = [...messages, userMessage]
@@ -241,10 +278,11 @@ function App() {
 
             <div
               ref={messagesContainerRef}
+              onScroll={handleScroll}
               style={{
                 height: '100%',
                 overflowY: 'auto',
-                padding: '72px 20px 100px',
+                padding: `72px 20px ${100 + keyboardHeight}px`,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 6,
@@ -319,15 +357,16 @@ function App() {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         style={{
           position: chatStarted ? 'fixed' : 'absolute',
-          bottom: chatStarted ? 0 : '38%',
+          bottom: chatStarted ? keyboardHeight : '38%',
           left: 0,
           right: 0,
           maxWidth: 680,
           margin: '0 auto',
-          padding: chatStarted ? '12px 16px 28px' : '0 24px',
+          padding: chatStarted ? `12px 16px ${keyboardHeight > 0 ? 12 : 28}px` : '0 24px',
           background: chatStarted ? 'rgba(255,255,255,0.92)' : 'transparent',
           backdropFilter: chatStarted ? 'blur(16px)' : 'none',
           WebkitBackdropFilter: chatStarted ? 'blur(16px)' : 'none',
+          transition: 'bottom 0.1s ease-out',
         }}
       >
         <div style={{
