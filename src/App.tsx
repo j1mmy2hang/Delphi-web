@@ -287,7 +287,7 @@ function App() {
               fontWeight: 400,
               letterSpacing: 2,
               color: '#1a1a1a',
-              marginBottom: 12,
+              marginBottom: 16,
             }}>
               Delphi
             </h1>
@@ -297,7 +297,7 @@ function App() {
               color: '#999',
               letterSpacing: 0.5,
             }}>
-              Prompt Yourself to Think Better
+              Think Deeper, Clearer, Better
             </h3>
           </motion.div>
         )}
@@ -328,7 +328,7 @@ function App() {
               left: 0,
               right: 0,
               height: 80,
-              background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0) 100%)',
+              background: 'linear-gradient(to bottom, rgba(246,246,246,1) 0%, rgba(246,246,246,0.85) 40%, rgba(255,255,255,0) 100%)',
               zIndex: 10,
               pointerEvents: 'none',
             }} />
@@ -340,7 +340,7 @@ function App() {
               left: 0,
               right: 0,
               height: 100,
-              background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0) 100%)',
+              background: 'linear-gradient(to top, rgba(246,246,246,1) 0%, rgba(246,246,246,0.85) 40%, rgba(255,255,255,0) 100%)',
               zIndex: 10,
               pointerEvents: 'none',
             }} />
@@ -436,7 +436,8 @@ function App() {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         style={{
           position: chatStarted ? 'fixed' : 'absolute',
-          bottom: chatStarted ? 0 : '38%',
+          bottom: chatStarted ? 0 : 'auto',
+          top: chatStarted ? 'auto' : '55%',
           left: 0,
           right: 0,
           maxWidth: 680,
@@ -463,13 +464,13 @@ function App() {
               display: 'flex',
               alignItems: 'flex-end',
               gap: 8,
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.3) 100%)',
+              background: 'linear-gradient(135deg, rgba(246,246,246,0.65) 0%, rgba(246,246,246,0.3) 100%)',
               backdropFilter: 'blur(20px) saturate(1.4)',
               WebkitBackdropFilter: 'blur(20px) saturate(1.4)',
               borderRadius: 22,
               padding: '8px 8px 8px 20px',
-              border: '1px solid rgba(255,255,255,0.5)',
-              boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)',
+              border: '1px solid rgba(246,246,246,0.5)',
+              boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(246,246,246,0.5)',
             }}
           >
             <textarea
@@ -523,18 +524,18 @@ function App() {
                 whileTap={{ scale: 0.92 }}
                 onClick={handleNewChat}
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
                   flexShrink: 0,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.3) 100%)',
+                  background: 'linear-gradient(135deg, rgba(246,246,246,0.65) 0%, rgba(246,246,246,0.3) 100%)',
                   backdropFilter: 'blur(20px) saturate(1.4)',
                   WebkitBackdropFilter: 'blur(20px) saturate(1.4)',
-                  border: '1px solid rgba(255,255,255,0.5)',
-                  boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)',
+                  border: '1px solid rgba(246,246,246,0.5)',
+                  boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(246,246,246,0.5)',
                 }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
