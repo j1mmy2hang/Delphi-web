@@ -467,7 +467,7 @@ function App() {
               backdropFilter: 'blur(20px) saturate(1.4)',
               WebkitBackdropFilter: 'blur(20px) saturate(1.4)',
               borderRadius: 22,
-              padding: '5px 5px 5px 16px',
+              padding: '8px 8px 8px 20px',
               border: '1px solid rgba(255,255,255,0.5)',
               boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)',
             }}
@@ -477,7 +477,7 @@ function App() {
               value={input}
               onChange={handleTextareaChange}
               onKeyDown={handleKeyDown}
-              placeholder="说点什么..."
+              placeholder="Share anything..."
               rows={1}
               style={{
                 flex: 1,
