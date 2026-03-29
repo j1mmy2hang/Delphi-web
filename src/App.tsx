@@ -139,31 +139,38 @@ function App() {
       margin: '0 auto',
       position: 'relative',
     }}>
-      {/* New Chat Button */}
+      {/* New Chat Button — liquid glass icon */}
       <AnimatePresence>
         {chatStarted && (
           <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
             onClick={handleNewChat}
             style={{
               position: 'fixed',
               top: 16,
               right: 16,
               zIndex: 100,
-              padding: '8px 14px',
-              fontSize: 14,
-              color: '#666',
-              background: 'rgba(255,255,255,0.85)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              width: 40,
+              height: 40,
               borderRadius: 20,
-              border: '1px solid rgba(0,0,0,0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.25) 100%)',
+              backdropFilter: 'blur(20px) saturate(1.4)',
+              WebkitBackdropFilter: 'blur(20px) saturate(1.4)',
+              border: '1px solid rgba(255,255,255,0.45)',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.5)',
             }}
           >
-            New Chat
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              {/* pencil-square / compose icon */}
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
           </motion.button>
         )}
       </AnimatePresence>
@@ -206,77 +213,102 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Messages */}
+      {/* Messages — with top fade mask */}
       <AnimatePresence>
         {chatStarted && (
           <motion.div
-            key="messages"
-            ref={messagesContainerRef}
+            key="messages-wrapper"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
             style={{
               flex: 1,
-              overflowY: 'auto',
-              padding: '60px 20px 100px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 6,
+              position: 'relative',
+              overflow: 'hidden',
             }}
           >
-            {messages.map((msg, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-                style={{
-                  display: 'flex',
-                  justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  marginBottom: msg.role === 'user' ? 2 : 10,
-                }}
-              >
-                <div style={{
-                  display: 'flex',
-                  flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  maxWidth: '85%',
-                }}>
-                  {/* Avatar */}
-                  <div style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '50%',
-                    background: msg.role === 'user' ? '#FFF8E7' : '#f0f0f0',
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 13,
-                    color: '#888',
-                    marginTop: 2,
-                  }}>
-                    {msg.role === 'user' ? '你' : 'δ'}
-                  </div>
+            {/* Top fade-out gradient mask */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 80,
+              background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0) 100%)',
+              zIndex: 10,
+              pointerEvents: 'none',
+            }} />
 
-                  {/* Bubble */}
+            <div
+              ref={messagesContainerRef}
+              style={{
+                height: '100%',
+                overflowY: 'auto',
+                padding: '72px 20px 100px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}
+            >
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                    marginBottom: msg.role === 'user' ? 2 : 10,
+                  }}
+                >
                   <div style={{
-                    padding: msg.role === 'user' ? '10px 16px' : '10px 4px',
-                    background: msg.role === 'user' ? '#FFF8E7' : 'transparent',
-                    borderRadius: msg.role === 'user' ? 20 : 0,
-                    fontSize: 15.5,
-                    lineHeight: 1.65,
-                    color: '#1a1a1a',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
+                    display: 'flex',
+                    flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+                    alignItems: 'flex-start',
+                    gap: 10,
+                    maxWidth: '85%',
                   }}>
-                    {msg.content}
+                    {/* Avatar — vertically aligned to first line of text */}
+                    <div style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: '50%',
+                      background: msg.role === 'user' ? '#FFF8E7' : '#f0f0f0',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                      color: '#888',
+                      // align center of avatar with center of first text line
+                      // first line height = fontSize(15.5) * lineHeight(1.65) ≈ 25.6px
+                      // bubble top padding = 10px for user, 6px for assistant
+                      // avatar center should be at: padding + lineHeight/2
+                      // avatar is 28px, so offset = padding + lineHeight/2 - 14
+                      marginTop: msg.role === 'user' ? Math.round(10 + 25.6 / 2 - 14) : Math.round(6 + 25.6 / 2 - 14),
+                    }}>
+                      {msg.role === 'user' ? '你' : 'δ'}
+                    </div>
+
+                    {/* Bubble */}
+                    <div style={{
+                      padding: msg.role === 'user' ? '10px 16px' : '6px 4px',
+                      background: msg.role === 'user' ? '#FFF8E7' : 'transparent',
+                      borderRadius: msg.role === 'user' ? 20 : 0,
+                      fontSize: 15.5,
+                      lineHeight: 1.65,
+                      color: '#1a1a1a',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                    }}>
+                      {msg.content}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-            <div ref={messagesEndRef} />
+                </motion.div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
