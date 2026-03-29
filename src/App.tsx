@@ -68,27 +68,45 @@ function App() {
   }, [messages, scrollMessageToTop])
 
   // Reposition input bar above keyboard; prevent iOS from scrolling the page
+  // Only active during chat — hero page doesn't need this
   useEffect(() => {
-    const vv = window.visualViewport
-    if (!vv) return
+    if (!chatStarted) return
 
-    const onViewportChange = () => {
-      // Force the page back to origin — iOS tries to scroll to show the focused input
+    const vv = window.visualViewport
+    const resetPageScroll = () => {
       window.scrollTo(0, 0)
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
+    }
+
+    // Catch the browser's native scroll-to-input on single tap focus
+    const textarea = textareaRef.current
+    const onFocus = () => {
+      // Run immediately + after a short delay to catch iOS's deferred scroll
+      resetPageScroll()
+      setTimeout(resetPageScroll, 50)
+      setTimeout(resetPageScroll, 150)
+      setTimeout(resetPageScroll, 300)
+    }
+    textarea?.addEventListener('focus', onFocus)
+
+    const onViewportChange = () => {
+      resetPageScroll()
 
       const bar = inputBarRef.current
-      if (!bar || !chatStarted) return
-      const offsetBottom = window.innerHeight - vv.height - vv.offsetTop
+      if (!bar) return
+      const offsetBottom = vv
+        ? window.innerHeight - vv.height - vv.offsetTop
+        : 0
       bar.style.bottom = `${Math.max(0, offsetBottom)}px`
     }
 
-    vv.addEventListener('resize', onViewportChange)
-    vv.addEventListener('scroll', onViewportChange)
+    vv?.addEventListener('resize', onViewportChange)
+    vv?.addEventListener('scroll', onViewportChange)
     return () => {
-      vv.removeEventListener('resize', onViewportChange)
-      vv.removeEventListener('scroll', onViewportChange)
+      textarea?.removeEventListener('focus', onFocus)
+      vv?.removeEventListener('resize', onViewportChange)
+      vv?.removeEventListener('scroll', onViewportChange)
     }
   }, [chatStarted])
 
@@ -315,6 +333,18 @@ function App() {
               pointerEvents: 'none',
             }} />
 
+            {/* Bottom fade-out gradient mask */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 100,
+              background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 40%, rgba(255,255,255,0) 100%)',
+              zIndex: 10,
+              pointerEvents: 'none',
+            }} />
+
             <div
               ref={messagesContainerRef}
               style={{
@@ -375,9 +405,9 @@ function App() {
                     <div style={{
                       padding: msg.role === 'user'
                         ? `${bubblePadY}px 16px`
-                        : `${bubblePadY}px 4px`,
-                      background: msg.role === 'user' ? '#FFF8E7' : 'transparent',
-                      borderRadius: msg.role === 'user' ? 20 : 0,
+                        : `${bubblePadY}px 16px`,
+                      background: msg.role === 'user' ? '#FFF8E7' : '#f0f0f0',
+                      borderRadius: 20,
                       fontSize,
                       lineHeight,
                       color: '#1a1a1a',
