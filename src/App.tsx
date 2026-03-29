@@ -67,11 +67,17 @@ function App() {
     }
   }, [messages, scrollMessageToTop])
 
+  // Reposition input bar above keyboard; prevent iOS from scrolling the page
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
 
     const onViewportChange = () => {
+      // Force the page back to origin — iOS tries to scroll to show the focused input
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+
       const bar = inputBarRef.current
       if (!bar || !chatStarted) return
       const offsetBottom = window.innerHeight - vv.height - vv.offsetTop
@@ -319,7 +325,7 @@ function App() {
                 padding: '72px 20px 100px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 6,
+                gap: 30,
               }}
             >
               {messages.map((msg, i) => (
