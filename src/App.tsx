@@ -110,32 +110,36 @@ function App() {
     }
   }, [chatStarted])
 
-  // Clamp scroll: cannot scroll past the last user message being at the top
+  // Calculate spacer height to limit scroll: last user message can reach top, no further
+  const [spacerHeight, setSpacerHeight] = useState('80vh')
   useEffect(() => {
+    if (!chatStarted) return
     const container = messagesContainerRef.current
     if (!container) return
 
-    const onScroll = () => {
-      const msgs = messagesRef.current
-      // Find last user message index
-      let lastUserIdx = -1
-      for (let i = msgs.length - 1; i >= 0; i--) {
-        if (msgs[i].role === 'user') { lastUserIdx = i; break }
-      }
-      if (lastUserIdx === -1) return
+    // Find last user message
+    let lastUserIdx = -1
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'user') { lastUserIdx = i; break }
+    }
+    if (lastUserIdx === -1) {
+      setSpacerHeight('80vh')
+      return
+    }
 
+    // Wait for DOM to paint the messages
+    requestAnimationFrame(() => {
       const el = messageRefs.current.get(lastUserIdx)
       if (!el) return
 
-      const maxScroll = el.offsetTop - 80
-      if (container.scrollTop > maxScroll) {
-        container.scrollTop = maxScroll
-      }
-    }
-
-    container.addEventListener('scroll', onScroll, { passive: true })
-    return () => container.removeEventListener('scroll', onScroll)
-  }, [chatStarted])
+      // Calculate how much bottom space is needed so this message can scroll to 80px from top
+      // containerHeight - 80 - el.offsetTop = needed spacer height (approximately)
+      const containerHeight = container.clientHeight
+      const targetOffset = 80
+      const neededSpacer = containerHeight - targetOffset - el.clientHeight
+      setSpacerHeight(`${Math.max(neededSpacer, 100)}px`)
+    })
+  }, [messages, chatStarted])
 
   const resetTextarea = () => {
     if (textareaRef.current) {
@@ -292,7 +296,7 @@ function App() {
               Delphi
             </h1>
             <h3 style={{
-              fontSize: isDesktop ? 27 : 15,
+              fontSize: isDesktop ? 27 : 18,
               fontWeight: 400,
               color: '#999',
               letterSpacing: 0.5,
@@ -406,7 +410,9 @@ function App() {
                       padding: msg.role === 'user'
                         ? `${bubblePadY}px 16px`
                         : `${bubblePadY}px 16px`,
-                      background: msg.role === 'user' ? '#FFF8E7' : '#f0f0f0',
+                      background: msg.role === 'user'
+                        ? '#FFF8E7'
+                        : (msg.content.trim() ? '#f0f0f0' : 'transparent'),
                       borderRadius: 20,
                       fontSize,
                       lineHeight,
@@ -420,8 +426,8 @@ function App() {
                 </motion.div>
               ))}
 
-              {/* Bottom spacer — allows any message to be scrolled to the top */}
-              <div style={{ minHeight: '80vh', flexShrink: 0 }} />
+              {/* Bottom spacer — dynamically sized so last user message can reach top */}
+              <div style={{ minHeight: spacerHeight, flexShrink: 0 }} />
             </div>
           </motion.div>
         )}
