@@ -11,42 +11,36 @@ function App() {
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [chatStarted, setChatStarted] = useState(false)
-  const [keyboardHeight, setKeyboardHeight] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
-  const isAtBottomRef = useRef(true)
+  const inputBarRef = useRef<HTMLDivElement>(null)
 
-  // Track whether user is scrolled to bottom
-  const handleScroll = useCallback(() => {
-    const el = messagesContainerRef.current
-    if (!el) return
-    const threshold = 40
-    isAtBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold
-  }, [])
-
-  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
-    messagesEndRef.current?.scrollIntoView({ behavior })
+  const scrollToLatest = useCallback(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+    // Scroll so the latest content is visible — push to bottom of scroll
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: 'smooth',
+    })
   }, [])
 
   useEffect(() => {
-    if (isAtBottomRef.current) {
-      scrollToBottom()
-    }
-  }, [messages, scrollToBottom])
+    scrollToLatest()
+  }, [messages, scrollToLatest])
 
-  // Track mobile keyboard via visualViewport API
+  // Keep input bar above the mobile keyboard using visualViewport
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
 
     const onResize = () => {
-      const kbHeight = window.innerHeight - vv.height - vv.offsetTop
-      setKeyboardHeight(Math.max(0, kbHeight))
-      // When keyboard opens/closes and we were at bottom, stay at bottom
-      if (isAtBottomRef.current) {
-        requestAnimationFrame(() => scrollToBottom('instant'))
-      }
+      const bar = inputBarRef.current
+      if (!bar || !chatStarted) return
+      // offsetTop = how much the viewport has shifted up due to keyboard
+      const offsetBottom = window.innerHeight - vv.height - vv.offsetTop
+      bar.style.bottom = `${Math.max(0, offsetBottom)}px`
     }
 
     vv.addEventListener('resize', onResize)
@@ -55,7 +49,7 @@ function App() {
       vv.removeEventListener('resize', onResize)
       vv.removeEventListener('scroll', onResize)
     }
-  }, [scrollToBottom])
+  }, [chatStarted])
 
   const resetTextarea = () => {
     if (textareaRef.current) {
@@ -75,14 +69,14 @@ function App() {
     const trimmed = input.trim()
     if (!trimmed || isStreaming) return
 
-    // Blur to dismiss mobile keyboard
-    textareaRef.current?.blur()
-
     const userMessage: Message = { role: 'user', content: trimmed }
     const newMessages = [...messages, userMessage]
     setMessages(newMessages)
     setInput('')
     resetTextarea()
+
+    // Blur input on mobile so keyboard collapses
+    textareaRef.current?.blur()
 
     if (!chatStarted) {
       setChatStarted(true)
@@ -278,11 +272,10 @@ function App() {
 
             <div
               ref={messagesContainerRef}
-              onScroll={handleScroll}
               style={{
                 height: '100%',
                 overflowY: 'auto',
-                padding: `72px 20px ${100 + keyboardHeight}px`,
+                padding: '72px 20px 100px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 6,
@@ -353,20 +346,20 @@ function App() {
 
       {/* Input Bar */}
       <motion.div
+        ref={inputBarRef}
         layout
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         style={{
           position: chatStarted ? 'fixed' : 'absolute',
-          bottom: chatStarted ? keyboardHeight : '38%',
+          bottom: chatStarted ? 0 : '38%',
           left: 0,
           right: 0,
           maxWidth: 680,
           margin: '0 auto',
-          padding: chatStarted ? `12px 16px ${keyboardHeight > 0 ? 12 : 28}px` : '0 24px',
+          padding: chatStarted ? '12px 16px 28px' : '0 24px',
           background: chatStarted ? 'rgba(255,255,255,0.92)' : 'transparent',
           backdropFilter: chatStarted ? 'blur(16px)' : 'none',
           WebkitBackdropFilter: chatStarted ? 'blur(16px)' : 'none',
-          transition: 'bottom 0.1s ease-out',
         }}
       >
         <div style={{
