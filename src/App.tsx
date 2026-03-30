@@ -333,7 +333,7 @@ function App() {
                 padding: '72px 20px 100px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 30,
+                gap: 40,
               }}
             >
               {messages.map((msg, i) => (
@@ -389,7 +389,7 @@ function App() {
                         ? '#293452'
                         : (msg.content.trim() ? '#E2E2E2' : 'transparent'),
                       outline: msg.role === 'assistant' && msg.content.trim() ? '1px solid rgba(0,0,0,0.02)' : 'none',
-                      borderRadius: 20,
+                      borderRadius: 22,
                       fontSize,
                       lineHeight,
                       color: msg.role === 'user' ? '#F0EDE4' : '#1a1a1a',
