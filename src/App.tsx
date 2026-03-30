@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Message {
@@ -110,32 +110,74 @@ function App() {
     }
   }, [chatStarted])
 
-  // Clamp scroll: cannot scroll past the last user message being at the top
+  // Compute dynamic max scroll: user msg at top, or enough to see assistant bottom
+  const computeMaxScroll = useCallback(() => {
+    const container = messagesContainerRef.current
+    if (!container) return 0
+    const msgs = messagesRef.current
+
+    let lastUserIdx = -1
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i].role === 'user') { lastUserIdx = i; break }
+    }
+    if (lastUserIdx === -1) return 0
+
+    const userEl = messageRefs.current.get(lastUserIdx)
+    if (!userEl) return 0
+
+    // Base: user message pinned 80px from top
+    const userAtTop = userEl.offsetTop - 80
+
+    // If assistant response extends beyond viewport, allow more scroll
+    const assistantIdx = lastUserIdx + 1
+    if (assistantIdx < msgs.length && msgs[assistantIdx]?.role === 'assistant') {
+      const aEl = messageRefs.current.get(assistantIdx)
+      if (aEl && aEl.offsetHeight > 0) {
+        const aBottom = aEl.offsetTop + aEl.offsetHeight
+        // 120 = ~90px input bar + 30px breathing room
+        const showBottomScroll = aBottom - container.clientHeight + 220
+        return Math.max(userAtTop, showBottomScroll)
+      }
+    }
+
+    return userAtTop
+  }, [])
+
+  // Scroll clamp: prevent scrolling past content bounds
   useEffect(() => {
     const container = messagesContainerRef.current
-    if (!container) return
+    if (!container || !chatStarted) return
 
     const onScroll = () => {
-      const msgs = messagesRef.current
-      // Find last user message index
-      let lastUserIdx = -1
-      for (let i = msgs.length - 1; i >= 0; i--) {
-        if (msgs[i].role === 'user') { lastUserIdx = i; break }
-      }
-      if (lastUserIdx === -1) return
-
-      const el = messageRefs.current.get(lastUserIdx)
-      if (!el) return
-
-      const maxScroll = el.offsetTop - 80
-      if (container.scrollTop > maxScroll) {
-        container.scrollTop = maxScroll
+      const max = computeMaxScroll()
+      if (container.scrollTop > max) {
+        container.scrollTop = max
       }
     }
 
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  }, [chatStarted])
+  }, [chatStarted, computeMaxScroll])
+
+  // Auto-scroll: follow content during streaming when it overflows viewport
+  useLayoutEffect(() => {
+    if (!isStreaming) return
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const lastIdx = messages.length - 1
+    if (lastIdx < 0 || messages[lastIdx].role !== 'assistant') return
+
+    const aEl = messageRefs.current.get(lastIdx)
+    if (!aEl || aEl.offsetHeight === 0) return
+
+    const aBottom = aEl.offsetTop + aEl.offsetHeight
+    const visibleBottom = container.scrollTop + container.clientHeight - 120
+
+    if (aBottom > visibleBottom) {
+      container.scrollTop = aBottom - container.clientHeight + 120
+    }
+  }, [messages, isStreaming])
 
   const resetTextarea = () => {
     if (textareaRef.current) {
