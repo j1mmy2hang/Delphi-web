@@ -86,7 +86,7 @@ export default async (req: Request, _context: Context) => {
       "HTTP-Referer": "https://delphi.netlify.app",
     },
     body: JSON.stringify({
-      model: "anthropic/claude-sonnet-4-6",
+      model: "anthropic/claude-sonnet-4.6",
       stream: true,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
