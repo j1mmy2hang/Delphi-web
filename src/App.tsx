@@ -41,7 +41,7 @@ function App() {
   useEffect(() => { messagesRef.current = messages }, [messages])
 
   // Responsive sizes
-  const fontSize = isDesktop ? 17 : 15.5
+  const fontSize = 15.5
   const lineHeight = 1.65
   const firstLineH = fontSize * lineHeight
   // User bubble: single-line height = padding-top + firstLineH + padding-bottom
@@ -319,32 +319,10 @@ function App() {
               bottom: 0,
               maxWidth: 680,
               margin: '0 auto',
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 80px, black calc(100% - 100px), transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 80px, black calc(100% - 100px), transparent 100%)',
             }}
           >
-            {/* Top fade-out gradient mask */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 80,
-              background: 'linear-gradient(to bottom, rgba(246,246,246,1) 0%, rgba(246,246,246,0.85) 40%, rgba(255,255,255,0) 100%)',
-              zIndex: 10,
-              pointerEvents: 'none',
-            }} />
-
-            {/* Bottom fade-out gradient mask */}
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 100,
-              background: 'linear-gradient(to top, rgba(246,246,246,1) 0%, rgba(246,246,246,0.85) 40%, rgba(255,255,255,0) 100%)',
-              zIndex: 10,
-              pointerEvents: 'none',
-            }} />
-
             <div
               ref={messagesContainerRef}
               style={{
@@ -385,13 +363,14 @@ function App() {
                       width: avatarSize,
                       height: avatarSize,
                       borderRadius: '50%',
-                      background: msg.role === 'user' ? '#293452' : '#f0f0f0',
+                      background: msg.role === 'user' ? '#293452' : '#E2E2E2',
                       flexShrink: 0,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: msg.role === 'user' ? (isDesktop ? 15 : 13) : (isDesktop ? 22 : 19),
                       color: '#888',
+                      outline: msg.role === 'assistant' ? '1px solid rgba(0,0,0,0.02)' : 'none',
                     }}>
                       {msg.role === 'user' ? (
                         <svg width="55%" height="55%" viewBox="0 0 24 24" fill="none">
@@ -408,7 +387,8 @@ function App() {
                         : `${bubblePadY}px 16px`,
                       background: msg.role === 'user'
                         ? '#293452'
-                        : (msg.content.trim() ? '#f0f0f0' : 'transparent'),
+                        : (msg.content.trim() ? '#E2E2E2' : 'transparent'),
+                      outline: msg.role === 'assistant' && msg.content.trim() ? '1px solid rgba(0,0,0,0.02)' : 'none',
                       borderRadius: 20,
                       fontSize,
                       lineHeight,
