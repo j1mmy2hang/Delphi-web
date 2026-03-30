@@ -385,7 +385,7 @@ function App() {
                       width: avatarSize,
                       height: avatarSize,
                       borderRadius: '50%',
-                      background: msg.role === 'user' ? '#FFF8E7' : '#f0f0f0',
+                      background: msg.role === 'user' ? '#293452' : '#f0f0f0',
                       flexShrink: 0,
                       display: 'flex',
                       alignItems: 'center',
@@ -395,8 +395,8 @@ function App() {
                     }}>
                       {msg.role === 'user' ? (
                         <svg width="55%" height="55%" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="8" r="4" fill="#1a1a1a" />
-                          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#1a1a1a" />
+                          <circle cx="12" cy="8" r="4" fill="#F0EDE4" />
+                          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#F0EDE4" />
                         </svg>
                       ) : 'δ'}
                     </div>
@@ -407,12 +407,12 @@ function App() {
                         ? `${bubblePadY}px 16px`
                         : `${bubblePadY}px 16px`,
                       background: msg.role === 'user'
-                        ? '#FFF8E7'
+                        ? '#293452'
                         : (msg.content.trim() ? '#f0f0f0' : 'transparent'),
                       borderRadius: 20,
                       fontSize,
                       lineHeight,
-                      color: '#1a1a1a',
+                      color: msg.role === 'user' ? '#F0EDE4' : '#1a1a1a',
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
                     }}>
@@ -498,7 +498,7 @@ function App() {
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
-                background: input.trim() ? '#FFF8E7' : 'rgba(0,0,0,0.04)',
+                background: input.trim() ? '#293452' : 'rgba(0,0,0,0.04)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -506,7 +506,7 @@ function App() {
                 transition: 'background 0.2s ease',
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={input.trim() ? '#1a1a1a' : '#bbb'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={input.trim() ? '#F0EDE4' : '#bbb'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="19" x2="12" y2="5" />
                 <polyline points="5 12 12 5 19 12" />
               </svg>
