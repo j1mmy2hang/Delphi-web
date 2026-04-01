@@ -330,6 +330,7 @@ function App() {
               letterSpacing: 2,
               color: '#1a1a1a',
               marginBottom: 16,
+              fontFamily: 'Cochin, Georgia, serif',
             }}>
               Delphi
             </h1>
@@ -338,6 +339,7 @@ function App() {
               fontWeight: 400,
               color: '#999',
               letterSpacing: 0.5,
+              fontFamily: 'Cochin, Georgia, serif',
             }}>
               Think Deeper, Clearer, Better
             </h3>
