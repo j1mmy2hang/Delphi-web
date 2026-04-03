@@ -27,6 +27,7 @@ body {
   color: #2C2E35;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-variant-ligatures: none;
 }
 
 input, textarea, button {
