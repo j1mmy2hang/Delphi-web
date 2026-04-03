@@ -343,6 +343,25 @@ function App() {
             }}>
               Think Deeper, Clearer, Better
             </h3>
+            <p style={{
+              position: 'absolute',
+              top: 'calc(60% + 76px)',
+              fontSize: 12,
+              color: '#bbb',
+              letterSpacing: 0.3,
+            }}>
+              crafted and used by{' '}
+              <a
+                href="https://jimmyzhang.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#bbb', textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#888')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#bbb')}
+              >
+                Jimmy Zhang
+              </a>
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
