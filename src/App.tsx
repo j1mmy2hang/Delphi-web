@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { MessageCirclePlus } from 'lucide-react'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -581,10 +582,7 @@ function App() {
                   boxShadow: '0 2px 16px rgba(0,0,0,0.06), inset 0 1px 0 rgba(246,246,246,0.5)',
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                </svg>
+                <MessageCirclePlus size={20} stroke="#555" strokeWidth={1.8} />
               </motion.button>
             )}
           </AnimatePresence>
