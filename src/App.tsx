@@ -7,9 +7,18 @@ interface Message {
   content: string
 }
 
-// Strip anything enclosed in < > (e.g. <situation 1> tags from system prompt)
-const stripAngleTags = (text: string) =>
-  text.replace(/<[^>]*>/g, '').replace(/\n{3,}/g, '\n\n').trim()
+// Strip anything enclosed in < > along with its content (e.g. <think> or <situation 1> tags)
+// Handles unclosed tags effectively by matching till the end of string if no closing tag is found.
+const stripAngleTags = (text: string) => {
+  // We match <tagName...>...</tagName> or standalone <tagName> if unclosed.
+  // A simpler robust way for streaming is removing `<...>` and for known large blocks 
+  // like <think>, removing everything inside. Let's specifically target <think> and generic angles.
+  return text
+    .replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, '')
+    .replace(/<[^>]*>/g, '') // fall back for other standalone tags if any
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
 
 const renderBasicMarkdown = (text: string) => {
   let html = text
