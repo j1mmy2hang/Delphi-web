@@ -11,6 +11,25 @@ interface Message {
 const stripAngleTags = (text: string) =>
   text.replace(/<[^>]*>/g, '').replace(/\n{3,}/g, '\n\n').trim()
 
+const renderBasicMarkdown = (text: string) => {
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+    
+  // Closed tags
+  html = html.replace(/\*\*((?:(?!\n\n)[\s\S])+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*((?:(?!\n\n)[\s\S])+?)\*/g, '<em>$1</em>');
+  html = html.replace(/(?<=^|\W)_((?:(?!\n\n)[\s\S])+?)_(?=$|\W)/g, '<em>$1</em>');
+
+  // Unclosed tags at the end of the string (for partial streams)
+  html = html.replace(/\*\*([^<]*)$/, '<strong>$1</strong>');
+  html = html.replace(/\*([^<]*)$/, '<em>$1</em>');
+  html = html.replace(/(?<=^|\W)_([^<]*)$/, '<em>$1</em>');
+
+  return html;
+}
+
 const isTouchDevice = () =>
   'ontouchstart' in window || navigator.maxTouchPoints > 0
 
@@ -460,7 +479,9 @@ function App() {
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
                     }}>
-                      {msg.role === 'assistant' ? stripAngleTags(msg.content) : msg.content}
+                      {msg.role === 'assistant' 
+                        ? <span dangerouslySetInnerHTML={{ __html: renderBasicMarkdown(stripAngleTags(msg.content)) }} />
+                        : msg.content}
                     </div>
                   </div>
                 </motion.div>
