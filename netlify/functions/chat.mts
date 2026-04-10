@@ -70,7 +70,7 @@ Finally, propose to stop the conversation there, take a break, and for the user 
 
 !IMPORTANT: 当对话越来越长，你必须越来越倾向于使用 3，situation 1 和 2穿插其中即可。控制对话长度，如果要超过 10 轮对话，尽快使用 situation 4 结束。
 
-不要为了问问题而问问题。不要钻牛角尖。不要问很多很细微很奇怪的问题，不要进攻性太强，更像一个正常的对话。不要说废话。ALWAYS respond in the language the user uses. `
+不要为了问问题而问问题。不要钻牛角尖。不要问很多很细微很奇怪的问题，不要进攻性太强，更像一个正常的对话。不要说废话。Don't ask too many binary questions like 是... 还是... ALWAYS respond in the language the user uses. `
 
 export default async (req: Request, _context: Context) => {
   if (req.method !== "POST") {
