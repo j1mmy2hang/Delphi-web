@@ -3,6 +3,9 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[functions]
+  included_files = ["system-prompt.md"]
+
 [dev]
   command = "npm run dev"
   targetPort = 5173
