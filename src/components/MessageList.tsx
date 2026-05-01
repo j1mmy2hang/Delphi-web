@@ -5,10 +5,11 @@ import { MessageItem } from './MessageItem'
 interface Props {
   messages: Message[]
   containerRef: React.RefObject<HTMLDivElement | null>
+  spacerRef: React.RefObject<HTMLDivElement | null>
   registerMessage: (index: number, el: HTMLDivElement | null) => void
 }
 
-export const MessageList = ({ messages, containerRef, registerMessage }: Props) => (
+export const MessageList = ({ messages, containerRef, spacerRef, registerMessage }: Props) => (
   <motion.div
     key="messages-wrapper"
     className="messages-wrapper"
@@ -24,7 +25,7 @@ export const MessageList = ({ messages, containerRef, registerMessage }: Props) 
           registerRef={(el) => registerMessage(i, el)}
         />
       ))}
-      <div className="messages-bottom-spacer" />
+      <div ref={spacerRef} className="messages-bottom-spacer" />
     </div>
   </motion.div>
 )

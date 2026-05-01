@@ -124,10 +124,11 @@ button { cursor: pointer; }
   gap: 40px;
 }
 
-/* Spacer below the last message — leaves room above the input bar AND lets a new
-   user message be scrolled all the way to the top of the viewport. */
+/* Spacer below the last message. Height is set dynamically by useChatScroll so
+   that (a) a freshly sent user message can pin to the top of the viewport, and
+   (b) once content fills the screen, the last assistant bottom rests near the
+   vertical middle when scrolled all the way down. */
 .messages-bottom-spacer {
-  min-height: 70vh;
   flex-shrink: 0;
 }
 

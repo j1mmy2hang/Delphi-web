@@ -14,7 +14,7 @@ function App() {
   const inputBarRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const { containerRef, registerMessage, scrollNewUserMessageToTop } =
+  const { containerRef, spacerRef, registerMessage, scrollNewUserMessageToTop } =
     useChatScroll(messages, isStreaming)
 
   useViewportKeyboard(chatStarted, textareaRef, inputBarRef)
@@ -42,6 +42,7 @@ function App() {
           <MessageList
             messages={messages}
             containerRef={containerRef}
+            spacerRef={spacerRef}
             registerMessage={registerMessage}
           />
         )}
